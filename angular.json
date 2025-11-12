@@ -105,6 +105,27 @@
                   "with": "src/environments/environment.upvusig.ts"
                 }
               ]
+            },
+            "gisserver": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.gisserver.ts"
+                }
+              ]
             }
           },       
           "defaultConfiguration": "production"
@@ -120,6 +141,9 @@
             },
             "fff": {
               "buildTarget": "metatierrascol-web:build:fff"
+            },
+            "gisserver": {
+              "buildTarget": "metatierrascol-web:build:gisserver"
             },
             "development": {
               "buildTarget": "metatierrascol-web:build:development"
