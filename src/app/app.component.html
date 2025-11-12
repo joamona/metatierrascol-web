@@ -30,6 +30,9 @@
                         <button mat-menu-item class="mat-menu-item" routerLink="baunit_list" [queryParams]="{mode: 'creado_por'}">
                             Listar mis propiedades
                         </button>  
+                        <button mat-menu-item class="mat-menu-item" routerLink="user_data">
+                            Mis datos
+                        </button>  
                     </mat-menu>
                 <!--FIN USER MENU-->
                 <button 
@@ -94,7 +97,7 @@
                         <span matTooltip="Nombre de usuario">U: {{authUserModel.username}}. </span>
                         <span matTooltip="Número de sesiones abiertas">S: {{authUserModel.opened_sessions}}</span>
                     </div>
-                    <div matTooltip="{{authUserModel.getGroupsAsString()}}" class="color-white">Grupos: {{authUserModel.groups[0]}}, ...</div>
+                    <div matTooltip="{{userGroupsString}}" class="color-white">Grupos: {{userGroupsString.slice(0,10)}}, ...</div>
                 </div>
             }
             <div>

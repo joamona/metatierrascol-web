@@ -1,24 +1,26 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {Subject} from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { AuthUserModel } from '../models/authUserModel';
 import { Message } from '../models/message';
-import { manageServerErrors, sendMessages } from '../utilities/manageMessages';
+import { manageServerErrors, sendMessages, sendMessagesFromListOfMessages } from '../utilities/manageMessages';
 import { StateEnum } from '../enumerations/stateEnum';
 import { GlobalMessageService } from './global-message.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {CookieService} from 'ngx-cookie-service';
+import { CookieService } from 'ngx-cookie-service';
+import { ServerResponseModel } from '../models/serverResponseModel';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  authUserModel: AuthUserModel= new AuthUserModel('',new Date('1500/01/01'),[],'');
+  authUserModel: AuthUserModel= new AuthUserModel({});
+
   authUserMessages: Message[] = [];
   headers = new HttpHeaders({ 'Content-Type': 'application/json', 
-    'Authorization': 'Token ' + this.authUserModel.token });
+    'Authorization': this.authUserModel.getToken() });
 
   // to announce when the user has been authenticated.
   // The AuthUserModel class methosds are not included
@@ -83,11 +85,13 @@ export class AuthService {
                 this.updateHeaders();
               }
             }
-            this.authUserModel.username = response.username;
-            this.authUserModel.groups = response.groups;
-            this.authUserModel.isLoggedIn=true;
-            this.authUserModel.opened_sessions=response.opened_sessions;
-            this.authUserMessages=sendMessages(StateEnum.success,'Sesión iniciada',this.globalMessageService);
+            response = new ServerResponseModel(response.messages, response.data);
+            this.authUserModel=new AuthUserModel(response.data[0]);
+            //this.authUserModel.username = response.username;
+            //this.authUserModel.groups = response.groups;
+            //this.authUserModel.isLoggedIn=true;
+            //this.authUserModel.opened_sessions=response.opened_sessions;
+            //this.authUserMessages=sendMessages(StateEnum.success,'Sesión iniciada',this.globalMessageService);
             this.announceAuthUserChange();
           },
           error:error=>{
@@ -106,21 +110,23 @@ export class AuthService {
     //this.username='joamona@cgf.upv.es';
     //this.userGroups=['topografo', 'admin'];
     this.authUserMessages=[];
-    this.httpClient.post<any>(apiUrl + 'core/knox/login/',
+    this.httpClient.post<ServerResponseModel>(apiUrl + 'core/knox/login/',
       {'username':username, 'password':password}).subscribe(
         {
           next:response=>{
-            if (response.token == undefined){
-              this.authUserMessages=sendMessages(StateEnum.info,'Las credenciales son correctas, pero se ha excedido el número máximo de tokens para ese usuario (10). Por favor cierre alguna sesión en otro dispositivo',this.globalMessageService, this.matSnackBar)             
+            response = new ServerResponseModel(response.messages, response.data);
+            this.authUserModel=new AuthUserModel(response.data[0]);
+            if (this.authUserModel.token == undefined){
+              sendMessagesFromListOfMessages(response.serverMessages,this.globalMessageService,this.matSnackBar);
+              this.authUserMessages=response.serverMessages;
               this.announceAuthUserChange();
               this.setApiUrl(apiUrl);//sets the new api url in the cookie and in this.authUserModel
               return
             }
             //response contains only properties, not methods
             //doe to that I create an AuthUserModel manually
-            this.authUserModel=new AuthUserModel(response.username, response.expiry,response.groups, response.token,true, response.opened_sessions);
             this.cookieService.set('token', this.authUserModel.token,7);
-            this.authUserMessages=sendMessages(StateEnum.success,'Sesión iniciada correctamente', this.globalMessageService, this.matSnackBar)
+            this.authUserMessages=response.serverMessages
             this.updateHeaders();
             this.announceAuthUserChange();
             this.setApiUrl(apiUrl);
@@ -138,7 +144,8 @@ export class AuthService {
         {
           next:response=>{
             //console.log(response)
-            this.authUserModel= new AuthUserModel('',new Date('1500/01/01'),[],'',false,-1,this.cookieService.get('apiUrl'));
+            this.authUserModel= new AuthUserModel({});
+            this.authUserModel.apiUrl=this.cookieService.get('apiUrl');
             this.authUserMessages=sendMessages(StateEnum.success,'Sesión cerrada', this.globalMessageService, this.matSnackBar)
             this.announceAuthUserChange();
             this.cookieService.delete('token');
@@ -150,13 +157,15 @@ export class AuthService {
         }
     );
   }
+
   removeAllSessions(){
     this.httpClient.post<AuthUserModel>(this.authUserModel.apiUrl + 'core/knox/logoutall/',
       {}, {headers: this.headers, responseType : 'json', reportProgress: false}).subscribe(
         {
           next:response=>{
             //console.log(response)
-            this.authUserModel= new AuthUserModel('',new Date('1500/01/01'),[],'',false,-1,this.cookieService.get('apiUrl'));
+            this.authUserModel= new AuthUserModel({});
+            this.authUserModel.apiUrl=this.cookieService.get('apiUrl');
             this.authUserMessages=sendMessages(StateEnum.success,'Sesión cerrada', this.globalMessageService, this.matSnackBar)
             this.cookieService.delete('token');
             this.authUserMessages.push(sendMessages(StateEnum.success,'El resto de sesiones han sido cerradas',this.globalMessageService)[0]);

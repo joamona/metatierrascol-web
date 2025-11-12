@@ -7,6 +7,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GlobalMessageService } from '../services/global-message.service';
 import { StateEnum } from '../enumerations/stateEnum';
 
+export function sendMessagesFromListOfMessages(messages: Message[], messageService: GlobalMessageService,  snackBar?: MatSnackBar): Message[]{ 
+  let joinedMessages:string='';
+  messages.forEach( m =>{
+    messageService.add(m);
+    if (isDevMode()){console.log(m.message)}
+    joinedMessages += m.message + '\n';
+  });
+  if (!(snackBar === undefined)){
+      snackBar.open(joinedMessages, 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
+  }
+  return messages
+}
+
 export function sendMessages(status: StateEnum, message:string, messageService: GlobalMessageService, snackBar?: MatSnackBar): Message[]{ 
   var m = new Message(status, message);
   messageService.add(m);

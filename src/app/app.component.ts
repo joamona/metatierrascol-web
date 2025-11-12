@@ -32,7 +32,8 @@ export class AppComponent implements AfterViewInit{
   @ViewChild('appDrawerLeft') appDrawerLeft: MatDrawer = {} as MatDrawer;
   @ViewChild('appDrawerRight') appDrawerRight: MatDrawer = {} as MatDrawer;
 
-  authUserModel:AuthUserModel = new AuthUserModel('',new Date('1500/01/01'),[],'');
+  authUserModel:AuthUserModel = new AuthUserModel({});
+  userGroupsString:string='';
 
   constructor (private authService: AuthService, private sidenavsService: SidenavsService,
     private showForRolesService: ShowForRolesService){
@@ -40,6 +41,7 @@ export class AppComponent implements AfterViewInit{
     authService.authUserSubject.subscribe({
       next: (value) => {
         this.authUserModel=value;
+        this.userGroupsString=this.authUserModel.getGroupsAsString();
       }
     })
     authService.isValidToken();

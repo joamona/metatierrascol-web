@@ -40,7 +40,7 @@ export class LoginComponent implements OnDestroy{
     username: this.username,
     password: this.password
   })
-  authUserModel: AuthUserModel = new AuthUserModel('',new Date('6666-01-01'),[],'',false)
+  authUserModel: AuthUserModel = new AuthUserModel({})
   componentMessages:Message[] = [];
   
   authMessagesSub?: Subscription;

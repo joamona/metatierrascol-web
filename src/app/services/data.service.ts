@@ -11,7 +11,7 @@ import { Observable } from 'ol';
   providedIn: 'root'
 })
 export class DataService {
-  authUserModel: AuthUserModel= new AuthUserModel('',new Date('1500/01/01'),[],'');
+  authUserModel: AuthUserModel= new AuthUserModel({});
   authUserMessages: Message[] = [];
   headers = new HttpHeaders({ 'Content-Type': 'application/json', 
     'Authorization': 'Token ' + this.authUserModel.token });

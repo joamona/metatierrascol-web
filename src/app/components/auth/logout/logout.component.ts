@@ -24,7 +24,7 @@ import { Message } from '../../../models/message';
 })
 export class LogoutComponent implements OnDestroy {
 
-  authUserModel: AuthUserModel = new AuthUserModel('',new Date('6666-01-01'),[],'',false)
+  authUserModel: AuthUserModel = new AuthUserModel({})
   componentMessages:Message[] = [];
 
   authMessagesSub?: Subscription;

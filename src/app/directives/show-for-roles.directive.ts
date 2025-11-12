@@ -31,7 +31,7 @@ export class ShowForRolesDirective implements OnInit, OnDestroy{
     this.sub=this.authService.authUserSubject.subscribe({
       next: value => {
         //console.log(this.authService.authUserModel.groups)
-        if (isAnyOfTheseValuesInArray(this.authService.authUserModel.groups, this.allowedRoles?.flat(1))){
+        if (isAnyOfTheseValuesInArray(this.authService.authUserModel.getGroupsAsArrayOfStrings(), this.allowedRoles?.flat(1))){
           /**
            * Keeps the element of the template 
            * this.allowedRoles?.flat(1) gets an array from the allowedRoles object*/

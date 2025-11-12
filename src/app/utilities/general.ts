@@ -193,3 +193,30 @@ function delay(ms: number) {
   //await delay(1000);
   return new Promise( resolve => setTimeout(resolve, ms) );
 }
+
+/**
+ * Removes n characters from a string
+ * @param cadena - The input string
+ * @param n - The number of characters to remove
+ * @param modoLast - If true (default), removes the last n characters. If false, removes the first n characters
+ * @returns The modified string with n characters removed
+ */
+export function removeCharacters(cadena: string, n: number, modoLast: boolean = true): string {
+  if (n <= 0) {
+    return cadena;
+  }
+  
+  if (n >= cadena.length) {
+    return '';
+  }
+  
+  if (modoLast) {
+    // Remove last n characters
+    var c = cadena.slice(0, -n);
+    return c;
+  } else {
+    // Remove first n characters
+    var c = cadena.slice(n);
+    return c;
+  }
+}
