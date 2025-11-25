@@ -126,6 +126,27 @@
                   "with": "src/environments/environment.gisserver.ts"
                 }
               ]
+            },
+            "apache-docker": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.apache-docker.ts"
+                }
+              ]
             }
           },       
           "defaultConfiguration": "production"
@@ -144,6 +165,9 @@
             },
             "fff": {
               "buildTarget": "metatierrascol-web:build:fff"
+            },
+            "apache-docker": {
+              "buildTarget": "metatierrascol-web:build:apache-docker"
             },
             "development": {
               "buildTarget": "metatierrascol-web:build:development"
